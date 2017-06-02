@@ -4,8 +4,11 @@ const { graphql, buildSchema } = require('graphql');
 
 const schema = buildSchema(`
 type Query {
+  id: ID
+  title: String
+  duration: Int
+  watched: Boolean
   foo: String
-  hello: String
 }
 
 type Schema {
@@ -16,11 +19,19 @@ type Schema {
 const resolvers = {
   foo: () => 'bar',
   hello: () => 'what up world',
+  id: () => 'some id',
+  title: () => 'foo bar',
+  duration: () => 180,
+  watched: () => true,
 };
 
 const query = `
 query myFirstQuery {
   foo
+  id
+  title
+  duration
+  watched
 }
 `;
 
@@ -30,10 +41,12 @@ query dynQuery {
 }
 `
 
-// graphql(schema, query, resolvers)
-//   .then(result => console.log(result))
-//   .catch(error => console.log(error));
-// graphql(schema, q('foo'), resolvers)
-graphql(schema, q(process.env.Q), resolvers)
+graphql(schema, query, resolvers)
   .then(result => console.log(result))
   .catch(error => console.log(error));
+
+
+const fakeDynamicQuery = x => 
+  graphql(schema, q(x || process.env.Q), resolvers)
+    .then(result => console.log(result))
+    .catch(error => console.log(error));
